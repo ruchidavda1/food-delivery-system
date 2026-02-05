@@ -84,6 +84,7 @@ public class DeliveryAssignmentService {
     
     private void initializeDrivers(int numberOfDrivers) {
         driverRepository.deleteAll();
+        driverRepository.flush();
         
         for (int i = 1; i <= numberOfDrivers; i++) {
             Driver driver = new Driver("D" + i);

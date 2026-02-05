@@ -62,9 +62,9 @@ food-delivery-system/
 
 1. **Java JDK 17**
 2. **Maven 3.6+**
-3. **IDE**: Eclipse, IntelliJ IDEA, or VS Code (optional)
+3. **IDE**: VS Code, Eclipse, IntelliJ IDEA etc
 
-**No database installation required!** The project uses H2 in-memory database which works out of the box. H2 used as mentioned to use H2. Hence used H2 instead of MySQL.
+The project uses H2 in-memory database. As mentioned to use H2, hence used H2 instead of MySQL.
 
 ## Quick Start (3 Steps)
 

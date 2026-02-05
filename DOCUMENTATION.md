@@ -60,8 +60,6 @@ Example: 1000 orders × 100 drivers = ~6,600 ops vs 100,000 ops
 
 Each assignment (success or failure) gets logged to `delivery_assignments` table with order time, driver ID, and completion time. Useful for debugging and analytics.
 
----
-
 ## Data Models
 
 ### DTOs (Data Transfer Objects)

@@ -233,33 +233,33 @@ Indexes: `customer_id`, `driver_id`, `order_time`
 **Setup**: 6 customers, 2 drivers
 
 ### Customer 1: Order at 1, Travel 10
-- D1 available at 0 ✓
+- D1 available at 0 (Yes)
 - Assign D1
 - D1 now free at: 1 + 10 = 11
 - **Result: C1 - D1**
 
 ### Customer 2: Order at 4, Travel 20
 - D1 available at 11 (busy)
-- D2 available at 0 ✓
+- D2 available at 0 (Yes)
 - Assign D2
 - D2 now free at: 4 + 20 = 24
 - **Result: C2 - D2**
 
 ### Customer 3: Order at 15, Travel 5
-- D1 available at 11 ✓
+- D1 available at 11 (Yes)
 - Assign D1
 - D1 now free at: 15 + 5 = 20
 - **Result: C3 - D1**
 
 ### Customer 4: Order at 22, Travel 20
-- D1 available at 20 ✓
+- D1 available at 20 (Yes)
 - Assign D1
 - D1 now free at: 22 + 20 = 42
 - **Result: C4 - D1**
 
 ### Customer 5: Order at 24, Travel 10
 - D1 available at 42 (busy)
-- D2 available at 24 ✓
+- D2 available at 24 (Yes)
 - Assign D2
 - D2 now free at: 24 + 10 = 34
 - **Result: C5 - D2**

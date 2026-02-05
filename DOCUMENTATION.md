@@ -366,51 +366,51 @@ Check if the service is running.
 
 ## Screenshots
 
-### Application Running
+### 1. Health Check API
 
-<img src="screenshots/Screenshot 2026-02-05 at 5.47.45 PM.png" alt="Application Startup" width="900"/>
+<img src="screenshots/healthapi.png" alt="Health Check API" width="900"/>
 
-*Application successfully started on port 8080*
-
----
-
-<img src="screenshots/Screenshot 2026-02-05 at 5.47.53 PM.png" alt="Health Check" width="900"/>
-
-*Health check endpoint responding*
+*Health check endpoint - verifies service is running properly*
 
 ---
 
-### API Testing
+### 2. Process Orders API (POST)
 
-<img src="screenshots/Screenshot 2026-02-05 at 5.48.04 PM.png" alt="Process Orders Request" width="900"/>
+<img src="screenshots/apideliveryprocesspost.png" alt="Process Orders API" width="900"/>
 
-*Sending batch order request to process endpoint*
-
----
-
-<img src="screenshots/Screenshot 2026-02-05 at 5.48.13 PM.png" alt="Process Orders Response" width="900"/>
-
-*Successful driver assignments returned*
+*Main endpoint - processes batch orders and assigns drivers to customers*
 
 ---
 
-### Database Views
+### 3. Get Drivers API (GET)
 
-<img src="screenshots/Screenshot 2026-02-05 at 5.48.21 PM.png" alt="Drivers List" width="900"/>
+<img src="screenshots/apideliverydriversget.png" alt="Get Drivers API" width="900"/>
 
-*Current driver statuses and availability*
-
----
-
-<img src="screenshots/Screenshot 2026-02-05 at 5.48.29 PM.png" alt="Customers List" width="900"/>
-
-*Customer orders with assignments*
+*Retrieves all drivers with their current status and availability times*
 
 ---
 
-<img src="screenshots/Screenshot 2026-02-05 at 5.48.37 PM.png" alt="Assignments Audit" width="900"/>
+### 4. Get Customers API (GET)
 
-*Complete audit trail of all assignments*
+<img src="screenshots/apideliverycustomersget.png" alt="Get Customers API" width="900"/>
+
+*Retrieves all customers with their order details and assigned drivers*
+
+---
+
+### 5. Get Assignments API (GET)
+
+<img src="screenshots/apideliveryassignmentsget.png" alt="Get Assignments API" width="900"/>
+
+*Complete audit trail of all delivery assignments with timestamps*
+
+---
+
+### 6. Reset System API (POST)
+
+<img src="screenshots/apideliveryresetpost.png" alt="Reset System API" width="900"/>
+
+*Clears all data and resets the system to initial state*
 
 ---
 

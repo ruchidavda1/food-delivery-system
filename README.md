@@ -65,18 +65,23 @@ food-delivery-system/
 
 ## Screenshots
 
-### Application Running
-<img src="screenshots/Screenshot 2026-02-05 at 5.47.45 PM.png" alt="Application Started" width="800"/>
+### Health Check API
+<img src="screenshots/healthapi.png" alt="Health Check API" width="800"/>
 
-### API Testing
-<img src="screenshots/Screenshot 2026-02-05 at 5.47.53 PM.png" alt="Health Check" width="800"/>
-<img src="screenshots/Screenshot 2026-02-05 at 5.48.04 PM.png" alt="Process Orders" width="800"/>
-<img src="screenshots/Screenshot 2026-02-05 at 5.48.13 PM.png" alt="Response" width="800"/>
+### Process Orders API
+<img src="screenshots/apideliveryprocesspost.png" alt="Process Orders API" width="800"/>
 
-### Database Views
-<img src="screenshots/Screenshot 2026-02-05 at 5.48.21 PM.png" alt="Drivers" width="800"/>
-<img src="screenshots/Screenshot 2026-02-05 at 5.48.29 PM.png" alt="Customers" width="800"/>
-<img src="screenshots/Screenshot 2026-02-05 at 5.48.37 PM.png" alt="Assignments" width="800"/>
+### Get Drivers API
+<img src="screenshots/apideliverydriversget.png" alt="Get Drivers API" width="800"/>
+
+### Get Customers API
+<img src="screenshots/apideliverycustomersget.png" alt="Get Customers API" width="800"/>
+
+### Get Assignments API
+<img src="screenshots/apideliveryassignmentsget.png" alt="Get Assignments API" width="800"/>
+
+### Reset System API
+<img src="screenshots/apideliveryresetpost.png" alt="Reset System API" width="800"/>
 
 *For detailed explanations of each screenshot, see [DOCUMENTATION.md](DOCUMENTATION.md#screenshots)*
 

@@ -23,52 +23,42 @@ Database (H2/MySQL)
 
 ## Algorithm
 
-### Main Flow - processBatchOrders()
+### Main Flow
 
-The main method orchestrates the entire process:
+The `processBatchOrders()` method handles the core logic:
 
-1. **Initialize Drivers** - Creates M drivers (D1, D2, D3...) with status "Available" and availableAt = 0
-2. **Fetch Drivers** - Retrieves all drivers ordered by driver_id ascending
-3. **Create Priority Queue** - Adds drivers to a PriorityQueue sorted by availableAt time, then driver index
-4. **Process Each Order** - Loops through orders sequentially, generating customer IDs (C1, C2, C3...)
-5. **Assign Driver** - Calls `assignDriverOptimized()` to find an available driver
-6. **Save Customer** - Creates Customer entity with assigned driver and status
-7. **Record Assignment** - Saves assignment record for audit trail
-8. **Build Response** - Returns list of AssignmentResponse objects
+1. Initialize M drivers (D1, D2, etc.) with `availableAt = 0`
+2. Load drivers from DB (sorted by ID to maintain priority)
+3. Add all drivers to a PriorityQueue (min-heap)
+4. For each order:
+   - Call `assignDriverOptimized()` to get an available driver
+   - Save customer record with assignment result
+   - Log to audit trail
+5. Return assignment responses
 
-### Optimized Driver Assignment - assignDriverOptimized()
+### Driver Assignment
 
-Uses a **PriorityQueue** (min-heap) for efficient driver lookups:
+The key optimization is using a **PriorityQueue** instead of iterating through all drivers.
 
-**Data Structure:**
-- PriorityQueue sorts drivers by: (1) availableAt time, (2) driver ID
-- Maintains lowest index priority when multiple drivers are free at same time
+The queue sorts drivers by:
+1. `availableAt` time (earliest first)
+2. `driverId` (D1 before D2 if both free at same time)
 
-**Algorithm Steps:**
-1. **Peek** at driver with earliest availability (O(1) operation)
-2. **Check** if `selectedDriver.availableAt <= orderTime`
-3. **If available:**
-   - Remove driver from queue (poll)
-   - Update driver: set status to "Busy", update `availableAt = orderTime + travelTime`
-   - Save to database
-   - Re-insert driver into queue (offer)
-   - Return driver ID
-4. **If not available:** Return "No Food :-("
+For each order:
+- Peek at the top of heap (next available driver)
+- If `driver.availableAt <= orderTime`: assign them
+- Update driver's `availableAt = orderTime + travelTime`
+- Re-insert into heap
+- If no driver is free: return "No Food :-("
 
-**Complexity Analysis:**
-- **Time Complexity:** O(N log M) where N = number of orders, M = number of drivers
-  - Each order requires O(log M) heap operations
-  - Total: N orders × log M = O(N log M)
-- **Space Complexity:** O(M) for the priority queue
-- **Performance Gain:** For 1000 orders and 100 drivers: ~6,600 operations vs 100,000 in naive O(N×M) approach
+This approach means we don't check every driver for every order. The heap maintains the next available driver at the top, so we only need O(log M) operations per assignment.
 
-### Assignment Recording - saveAssignmentRecord()
+**Performance:** O(N log M) vs O(N×M) for naive iteration  
+Example: 1000 orders × 100 drivers = ~6,600 ops vs 100,000 ops
 
-Creates an audit trail entry:
+### Audit Trail
 
-1. Creates DeliveryAssignment entity with customer ID, order time, and result
-2. If driver was assigned, adds driver ID, assignment time, and completion time
-3. Persists assignment record to database for tracking
+Each assignment (success or failure) gets logged to `delivery_assignments` table with order time, driver ID, and completion time. Useful for debugging and analytics.
 
 ### Data Transfer Objects (DTOs)
 

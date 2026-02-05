@@ -97,16 +97,41 @@ Given 6 customers and 2 drivers:
 
 ```
 food-delivery-system/
-├── src/main/java/com/rooftop/delivery/
-│   ├── FoodDeliveryApplication.java
-│   ├── controller/DeliveryController.java
-│   ├── service/DeliveryAssignmentService.java
-│   ├── repository/
-│   ├── model/
-│   └── dto/
-├── src/main/resources/application.properties
+├── src/
+│   └── main/
+│       ├── java/com/rooftop/delivery/
+│       │   ├── FoodDeliveryApplication.java
+│       │   ├── controller/
+│       │   │   └── DeliveryController.java
+│       │   ├── service/
+│       │   │   └── DeliveryAssignmentService.java
+│       │   ├── repository/
+│       │   │   ├── DriverRepository.java
+│       │   │   ├── CustomerRepository.java
+│       │   │   └── DeliveryAssignmentRepository.java
+│       │   ├── model/
+│       │   │   ├── Driver.java
+│       │   │   ├── Customer.java
+│       │   │   └── DeliveryAssignment.java
+│       │   └── dto/
+│       │       ├── OrderRequest.java
+│       │       ├── BatchOrderRequest.java
+│       │       └── AssignmentResponse.java
+│       └── resources/
+│           └── application.properties
+├── screenshots/
+│   ├── healthapi.png
+│   ├── apideliveryprocesspost.png
+│   ├── apideliverydriversget.png
+│   ├── apideliverycustomersget.png
+│   ├── apideliveryassignmentsget.png
+│   └── apideliveryresetpost.png
 ├── pom.xml
-└── README.md
+├── input.txt
+├── schema-mysql.sql
+├── .gitignore
+├── README.md
+└── DOCUMENTATION.md
 ```
 
 ## Database

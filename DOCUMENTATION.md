@@ -60,13 +60,15 @@ Example: 1000 orders × 100 drivers = ~6,600 ops vs 100,000 ops
 
 Each assignment (success or failure) gets logged to `delivery_assignments` table with order time, driver ID, and completion time. Useful for debugging and analytics.
 
-### Data Transfer Objects (DTOs)
+## Data Models
+
+### DTOs (Data Transfer Objects)
 
 **OrderRequest**: Contains orderTime and travelTime with validation annotations  
 **BatchOrderRequest**: Contains numberOfCustomers, numberOfDrivers, and list of OrderRequest objects  
 **AssignmentResponse**: Contains customerId, assignedDriver, and formatted message for output
 
-### Entity Models
+### Entities
 
 **Driver**: Stores driver_id, status (Available/Busy), availableAt time, and timestamps  
 **Customer**: Stores customer_id, order details, assigned_driver, status (ASSIGNED/REJECTED)  

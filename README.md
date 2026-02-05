@@ -28,12 +28,11 @@ The system manages food delivery by assigning M drivers to N customer orders. Ea
 ## Project Structure
 
 ```
-food-delivery-assignment/
+food-delivery-system/
 ├── src/
 │   └── main/
 │       ├── java/com/rooftop/delivery/
 │       │   ├── FoodDeliveryApplication.java
-│       │   ├── CommandLineRunner.java
 │       │   ├── model/
 │       │   │   ├── Customer.java
 │       │   │   ├── Driver.java
@@ -46,17 +45,17 @@ food-delivery-assignment/
 │       │   │   └── DeliveryAssignmentService.java
 │       │   ├── controller/
 │       │   │   └── DeliveryController.java
-│       │   ├── dto/
-│       │   │   ├── OrderRequest.java
-│       │   │   ├── BatchOrderRequest.java
-│       │   │   └── AssignmentResponse.java
-│       │   └── util/
-│       │       └── FileInputProcessor.java
+│       │   └── dto/
+│       │       ├── OrderRequest.java
+│       │       ├── BatchOrderRequest.java
+│       │       └── AssignmentResponse.java
 │       └── resources/
-│           ├── application.properties
-│           └── schema.sql
+│           └── application.properties
 ├── pom.xml
-└── input.txt
+├── input.txt
+├── schema-mysql.sql
+├── .gitignore
+└── README.md
 ```
 
 ## Prerequisites

@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 
 @Service
 public class DeliveryAssignmentService {
@@ -34,12 +36,18 @@ public class DeliveryAssignmentService {
         List<AssignmentResponse> responses = new ArrayList<>();
         List<Driver> drivers = driverRepository.findAllByOrderByDriverIdAsc();
         
+        PriorityQueue<Driver> driverQueue = new PriorityQueue<>(
+            Comparator.comparingInt(Driver::getAvailableAt)
+                      .thenComparing(Driver::getDriverId)
+        );
+        driverQueue.addAll(drivers);
+        
         for (int i = 0; i < request.getOrders().size(); i++) {
             OrderRequest order = request.getOrders().get(i);
             String customerId = "C" + (i + 1);
             
             Customer customer = new Customer(customerId, order.getOrderTime(), order.getTravelTime());
-            String assignedDriver = assignDriver(drivers, order.getOrderTime(), order.getTravelTime());
+            String assignedDriver = assignDriverOptimized(driverQueue, order.getOrderTime(), order.getTravelTime());
             
             customer.setAssignedDriver(assignedDriver);
             customer.setStatus(assignedDriver.equals("No Food :-(") ? "REJECTED" : "ASSIGNED");
@@ -54,23 +62,19 @@ public class DeliveryAssignmentService {
         return responses;
     }
     
-    private String assignDriver(List<Driver> drivers, int orderTime, int travelTime) {
-        Driver selectedDriver = null;
+    private String assignDriverOptimized(PriorityQueue<Driver> driverQueue, int orderTime, int travelTime) {
+        Driver selectedDriver = driverQueue.peek();
         
-        for (Driver driver : drivers) {
-            if (driver.getAvailableAt() <= orderTime) {
-                selectedDriver = driver;
-                break;
-            }
-        }
-        
-        if (selectedDriver == null) {
+        if (selectedDriver == null || selectedDriver.getAvailableAt() > orderTime) {
             return "No Food :-(";
         }
         
+        driverQueue.poll();
         selectedDriver.setStatus("Busy");
         selectedDriver.setAvailableAt(orderTime + travelTime);
         driverRepository.save(selectedDriver);
+        
+        driverQueue.offer(selectedDriver);
         
         return selectedDriver.getDriverId();
     }

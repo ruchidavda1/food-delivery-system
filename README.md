@@ -1,161 +1,385 @@
-# RoofTop Food Delivery System
+# Technical Documentation
 
-A Spring Boot REST API that assigns delivery drivers to customer orders based on availability and timing.
+## Architecture
 
-## Problem
+### Layers
 
-Assign M drivers to N customer orders where:
-- Each order has: order time (O) and travel time (T)
-- Drivers are assigned by lowest index first (D1, then D2, etc.)
-- Drivers can only handle one order at a time
-- If all drivers are busy, return "No Food :-("
-
-## Tech Stack
-
-- Java 17
-- Spring Boot 2.7.14
-- Spring Data JPA
-- H2 Database (in-memory)
-- Maven
-
-## Quick Start
-
-### 1. Build
-```bash
-mvn clean install
+```
+Controller (REST API)
+    ↓
+Service (Business Logic)
+    ↓
+Repository (Data Access)
+    ↓
+Database (H2/MySQL)
 ```
 
-### 2. Run
-```bash
-mvn spring-boot:run
+### Components
+
+**DeliveryController**: Handles HTTP requests, validates input, returns JSON  
+**DeliveryAssignmentService**: Core assignment algorithm, driver management  
+**Repositories**: Spring Data JPA interfaces for database operations  
+**Models**: Driver, Customer, DeliveryAssignment entities
+
+## Algorithm
+
+### Main Flow - processBatchOrders()
+
+The main method orchestrates the entire process:
+
+1. **Initialize Drivers** - Creates M drivers (D1, D2, D3...) with status "Available" and availableAt = 0
+2. **Fetch Drivers** - Retrieves all drivers ordered by driver_id ascending
+3. **Create Priority Queue** - Adds drivers to a PriorityQueue sorted by availableAt time, then driver index
+4. **Process Each Order** - Loops through orders sequentially, generating customer IDs (C1, C2, C3...)
+5. **Assign Driver** - Calls `assignDriverOptimized()` to find an available driver
+6. **Save Customer** - Creates Customer entity with assigned driver and status
+7. **Record Assignment** - Saves assignment record for audit trail
+8. **Build Response** - Returns list of AssignmentResponse objects
+
+### Optimized Driver Assignment - assignDriverOptimized()
+
+Uses a **PriorityQueue** (min-heap) for efficient driver lookups:
+
+**Data Structure:**
+- PriorityQueue sorts drivers by: (1) availableAt time, (2) driver ID
+- Maintains lowest index priority when multiple drivers are free at same time
+
+**Algorithm Steps:**
+1. **Peek** at driver with earliest availability (O(1) operation)
+2. **Check** if `selectedDriver.availableAt <= orderTime`
+3. **If available:**
+   - Remove driver from queue (poll)
+   - Update driver: set status to "Busy", update `availableAt = orderTime + travelTime`
+   - Save to database
+   - Re-insert driver into queue (offer)
+   - Return driver ID
+4. **If not available:** Return "No Food :-("
+
+**Complexity Analysis:**
+- **Time Complexity:** O(N log M) where N = number of orders, M = number of drivers
+  - Each order requires O(log M) heap operations
+  - Total: N orders × log M = O(N log M)
+- **Space Complexity:** O(M) for the priority queue
+- **Performance Gain:** For 1000 orders and 100 drivers: ~6,600 operations vs 100,000 in naive O(N×M) approach
+
+### Assignment Recording - saveAssignmentRecord()
+
+Creates an audit trail entry:
+
+1. Creates DeliveryAssignment entity with customer ID, order time, and result
+2. If driver was assigned, adds driver ID, assignment time, and completion time
+3. Persists assignment record to database for tracking
+
+### Data Transfer Objects (DTOs)
+
+**OrderRequest**: Contains orderTime and travelTime with validation annotations  
+**BatchOrderRequest**: Contains numberOfCustomers, numberOfDrivers, and list of OrderRequest objects  
+**AssignmentResponse**: Contains customerId, assignedDriver, and formatted message for output
+
+### Entity Models
+
+**Driver**: Stores driver_id, status (Available/Busy), availableAt time, and timestamps  
+**Customer**: Stores customer_id, order details, assigned_driver, status (ASSIGNED/REJECTED)  
+**DeliveryAssignment**: Audit record with customer_id, driver_id, times, and assignment result
+
+### Repositories
+
+Spring Data JPA interfaces that extend JpaRepository:
+
+**DriverRepository**: Has custom query `findAllByOrderByDriverIdAsc()` to maintain driver priority  
+**CustomerRepository**: Standard CRUD operations  
+**DeliveryAssignmentRepository**: Standard CRUD operations
+
+## API Reference
+
+### POST /api/delivery/process
+
+Process batch orders and assign drivers.
+
+**Request:**
+```json
+{
+  "numberOfCustomers": 6,
+  "numberOfDrivers": 2,
+  "orders": [
+    {"orderTime": 1, "travelTime": 10},
+    {"orderTime": 4, "travelTime": 20}
+  ]
+}
 ```
 
-### 3. Test
+**Response:**
+```json
+{
+  "status": "success",
+  "totalCustomers": 6,
+  "totalDrivers": 2,
+  "assignments": [
+    {"customerId": "C1", "assignedDriver": "D1", "message": "C1 - D1"},
+    {"customerId": "C2", "assignedDriver": "D2", "message": "C2 - D2"}
+  ]
+}
+```
+
+### GET /api/delivery/drivers
+
+Returns all drivers with status and availability.
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "driverId": "D1",
+    "status": "Busy",
+    "availableAt": 42,
+    "createdAt": "2026-02-05T17:45:00"
+  }
+]
+```
+
+### GET /api/delivery/customers
+
+Returns all customers with assignments.
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "customerId": "C1",
+    "orderTime": 1,
+    "travelTime": 10,
+    "assignedDriver": "D1",
+    "status": "ASSIGNED"
+  }
+]
+```
+
+### GET /api/delivery/assignments
+
+Returns complete assignment audit trail.
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "customerId": "C1",
+    "driverId": "D1",
+    "orderTime": 1,
+    "assignmentTime": 1,
+    "completionTime": 11,
+    "assignmentResult": "D1"
+  }
+]
+```
+
+### POST /api/delivery/reset
+
+Clears all data from database.
+
+**Response:**
+```json
+{
+  "status": "success",
+  "message": "System reset successfully"
+}
+```
+
+### GET /api/delivery/health
+
+Health check endpoint.
+
+**Response:**
+```json
+{
+  "status": "UP",
+  "service": "RoofTop Food Delivery System"
+}
+```
+
+## Database Schema
+
+### drivers
+| Column | Type | Description |
+|--------|------|-------------|
+| id | BIGINT | Primary key |
+| driver_id | VARCHAR(10) | D1, D2, D3... |
+| status | VARCHAR(20) | Available/Busy |
+| available_at | INT | When driver is free |
+| current_order_id | VARCHAR(10) | Current delivery |
+| created_at | TIMESTAMP | Creation time |
+
+Indexes: `driver_id`, `available_at`
+
+### customers
+| Column | Type | Description |
+|--------|------|-------------|
+| id | BIGINT | Primary key |
+| customer_id | VARCHAR(10) | C1, C2, C3... |
+| order_time | INT | Order placement time |
+| travel_time | INT | Delivery duration |
+| assigned_driver | VARCHAR(50) | Driver or "No Food" |
+| status | VARCHAR(20) | ASSIGNED/REJECTED |
+| created_at | TIMESTAMP | Creation time |
+
+Indexes: `customer_id`, `order_time`
+
+### delivery_assignments
+| Column | Type | Description |
+|--------|------|-------------|
+| id | BIGINT | Primary key |
+| customer_id | VARCHAR(10) | Customer reference |
+| driver_id | VARCHAR(10) | Driver reference |
+| order_time | INT | Order time |
+| assignment_time | INT | Assignment time |
+| completion_time | INT | Expected completion |
+| assignment_result | VARCHAR(50) | Assignment result |
+| created_at | TIMESTAMP | Creation time |
+
+Indexes: `customer_id`, `driver_id`, `order_time`
+
+## Step-by-Step Example
+
+**Setup**: 6 customers, 2 drivers
+
+### Customer 1: Order at 1, Travel 10
+- D1 available at 0 (Yes)
+- Assign D1
+- D1 now free at: 1 + 10 = 11
+- **Result: C1 - D1**
+
+### Customer 2: Order at 4, Travel 20
+- D1 available at 11 (busy)
+- D2 available at 0 (Yes)
+- Assign D2
+- D2 now free at: 4 + 20 = 24
+- **Result: C2 - D2**
+
+### Customer 3: Order at 15, Travel 5
+- D1 available at 11 (Yes)
+- Assign D1
+- D1 now free at: 15 + 5 = 20
+- **Result: C3 - D1**
+
+### Customer 4: Order at 22, Travel 20
+- D1 available at 20 (Yes)
+- Assign D1
+- D1 now free at: 22 + 20 = 42
+- **Result: C4 - D1**
+
+### Customer 5: Order at 24, Travel 10
+- D1 available at 42 (busy)
+- D2 available at 24 (Yes)
+- Assign D2
+- D2 now free at: 24 + 10 = 34
+- **Result: C5 - D2**
+
+### Customer 6: Order at 25, Travel 10
+- D1 available at 42 (busy)
+- D2 available at 34 (busy)
+- No driver available
+- **Result: C6 - No Food :-(**
+
+## Configuration
+
+### H2 Database (Default)
+
+In `application.properties`:
+```properties
+spring.datasource.url=jdbc:h2:mem:rooftop_delivery
+spring.datasource.driver-class-name=org.h2.Driver
+spring.h2.console.enabled=true
+```
+
+### MySQL (Optional)
+
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/rooftop_delivery
+spring.datasource.username=root
+spring.datasource.password=your_password
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+spring.jpa.hibernate.ddl-auto=update
+```
+
+Run `schema-mysql.sql` to create tables.
+
+## Testing
+
+### Using cURL
+
 ```bash
+# Health check
 curl http://localhost:8080/api/delivery/health
 
+# Process orders
 curl -X POST http://localhost:8080/api/delivery/process \
   -H "Content-Type: application/json" \
-  -d '{
-    "numberOfCustomers": 6,
-    "numberOfDrivers": 2,
-    "orders": [
-      {"orderTime": 1, "travelTime": 10},
-      {"orderTime": 4, "travelTime": 20},
-      {"orderTime": 15, "travelTime": 5},
-      {"orderTime": 22, "travelTime": 20},
-      {"orderTime": 24, "travelTime": 10},
-      {"orderTime": 25, "travelTime": 10}
-    ]
-  }'
+  -d @- <<EOF
+{
+  "numberOfCustomers": 6,
+  "numberOfDrivers": 2,
+  "orders": [
+    {"orderTime": 1, "travelTime": 10},
+    {"orderTime": 4, "travelTime": 20},
+    {"orderTime": 15, "travelTime": 5},
+    {"orderTime": 22, "travelTime": 20},
+    {"orderTime": 24, "travelTime": 10},
+    {"orderTime": 25, "travelTime": 10}
+  ]
+}
+EOF
+
+# View drivers
+curl http://localhost:8080/api/delivery/drivers
+
+# View customers
+curl http://localhost:8080/api/delivery/customers
+
+# View assignments
+curl http://localhost:8080/api/delivery/assignments
+
+# Reset
+curl -X POST http://localhost:8080/api/delivery/reset
 ```
 
-**Expected:** `C1-D1, C2-D2, C3-D1, C4-D1, C5-D2, C6-No Food :-(`
+### Using Postman
 
-## API Endpoints
-
-Base URL: `http://localhost:8080/api/delivery`
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/process` | Process orders and assign drivers |
-| GET | `/drivers` | Get all drivers |
-| GET | `/customers` | Get all customers |
-| GET | `/assignments` | Get assignment history |
-| POST | `/reset` | Clear all data |
-| GET | `/health` | Health check |
-
-## How It Works
-
-The algorithm is simple:
-
-1. Initialize M drivers with `availableAt = 0`
-2. For each customer order:
-   - Loop through drivers (D1, D2, D3...)
-   - Find first driver where `availableAt <= orderTime`
-   - If found: assign driver, set `availableAt = orderTime + travelTime`
-   - If not found: return "No Food :-("
-
-### Example
-
-Given 6 customers and 2 drivers:
-
-| Customer | Order Time | Travel Time | D1 Free At | D2 Free At | Assigned |
-|----------|-----------|-------------|------------|------------|----------|
-| C1       | 1         | 10          | 0          | 0          | D1       |
-| C2       | 4         | 20          | 11         | 0          | D2       |
-| C3       | 15        | 5           | 11         | 24         | D1       |
-| C4       | 22        | 20          | 20         | 24         | D1       |
-| C5       | 24        | 10          | 42         | 24         | D2       |
-| C6       | 25        | 10          | 42         | 34         | No Food  |
-
-## Project Structure
-
-```
-food-delivery-system/
-├── src/main/java/com/rooftop/delivery/
-│   ├── FoodDeliveryApplication.java
-│   ├── controller/DeliveryController.java
-│   ├── service/DeliveryAssignmentService.java
-│   ├── repository/
-│   ├── model/
-│   └── dto/
-├── src/main/resources/application.properties
-├── pom.xml
-└── README.md
-```
-
-## Database
-
-Uses H2 in-memory database by default. Access H2 console at:
-- URL: http://localhost:8080/h2-console
-- JDBC URL: `jdbc:h2:mem:rooftop_delivery`
-- Username: `sa`
-- Password: (empty)
-
-### Tables
-
-**drivers**: Tracks driver ID, status, and availability time  
-**customers**: Stores customer orders and assignments  
-**delivery_assignments**: Complete audit trail of assignments
-
-## Optional: MySQL Setup
-
-1. Install MySQL 8.0+
-2. Create database: `CREATE DATABASE rooftop_delivery;`
-3. Update `application.properties`:
-   - Comment out H2 config
-   - Uncomment MySQL config
-   - Set your password
+1. Set base URL: `http://localhost:8080`
+2. Import endpoints from API Reference section
+3. Test each endpoint with sample data
 
 ## Screenshots
 
-### API Endpoints
+### 1. Health Check API
+<img src="screenshots/healthapi.png" alt="Health Check" width="900"/>
 
-<img src="screenshots/healthapi.png" alt="Health Check" width="800"/>
-<img src="screenshots/apideliveryprocesspost.png" alt="Process Orders" width="800"/>
-<img src="screenshots/apideliverydriversget.png" alt="Get Drivers" width="800"/>
-<img src="screenshots/apideliverycustomersget.png" alt="Get Customers" width="800"/>
-<img src="screenshots/apideliveryassignmentsget.png" alt="Get Assignments" width="800"/>
-<img src="screenshots/apideliveryresetpost.png" alt="Reset System" width="800"/>
+Verifies the service is running.
 
-## Input File Format
+### 2. Process Orders API
+<img src="screenshots/apideliveryprocesspost.png" alt="Process Orders" width="900"/>
 
-You can also use `input.txt`:
-```
-6,2          # N customers, M drivers
-1,10         # orderTime, travelTime
-4,20
-15,5
-22,20
-24,10
-25,10
-```
+Main endpoint that processes batch orders and assigns drivers.
 
-## Testing Tools
+### 3. Get Drivers API
+<img src="screenshots/apideliverydriversget.png" alt="Get Drivers" width="900"/>
 
-**cURL**: See examples above  
-**Postman**: Import endpoints, set base URL to `http://localhost:8080`  
-**H2 Console**: Run SQL queries directly
+Shows all drivers with their current status and availability times.
 
-For detailed technical documentation, see [DOCUMENTATION.md](DOCUMENTATION.md)
+### 4. Get Customers API
+<img src="screenshots/apideliverycustomersget.png" alt="Get Customers" width="900"/>
+
+Lists all customers with their order details and assigned drivers.
+
+### 5. Get Assignments API
+<img src="screenshots/apideliveryassignmentsget.png" alt="Get Assignments" width="900"/>
+
+Complete audit trail of all assignments with timestamps.
+
+### 6. Reset System API
+<img src="screenshots/apideliveryresetpost.png" alt="Reset System" width="900"/>
+
+Clears all data and resets the system.
+

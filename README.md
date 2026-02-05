@@ -2,7 +2,7 @@
 
 A cloud-based food delivery driver assignment system built for RoofTop Restaurant in New York. The system efficiently assigns delivery drivers to customer orders based on driver availability and order timing.
 
-📖 **[View Complete Documentation](DOCUMENTATION.md)** - Detailed technical documentation with architecture, API specs, and examples
+**[View Complete Documentation](DOCUMENTATION.md)** - Detailed technical documentation with architecture, API specs, and examples
 
 ## Problem Statement
 
@@ -468,7 +468,7 @@ Given: 6 customers, 2 drivers
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 For complete technical documentation including:
 - Detailed architecture diagrams
@@ -483,7 +483,7 @@ For complete technical documentation including:
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 All application screenshots are available in the [screenshots](screenshots/) folder and documented in [DOCUMENTATION.md](DOCUMENTATION.md#screenshots).
 

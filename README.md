@@ -19,7 +19,7 @@ The system manages food delivery by assigning M drivers to N customer orders. Ea
 - **Java**: 17
 - **Spring Boot**: 2.7.14
 - **Spring Data JPA**: Database operations
-- **H2 Database**: In-memory database H2 used as HR mentioned to use H2 on call. Hence used H2 instead of MySQL.
+- **H2 Database**: In-memory database H2 used as mentioned. Hence used H2 instead of MySQL.
 - **Maven**: Build tool
 - **RESTful Web Services**: API endpoints
 
@@ -65,7 +65,7 @@ food-delivery-assignment/
 2. **Maven 3.6+**
 3. **IDE**: Eclipse, IntelliJ IDEA, or VS Code (optional)
 
-**No database installation required!** The project uses H2 in-memory database which works out of the box. H2 used as HR mentioned to use H2 on call. Hence used H2 instead of MySQL.
+**No database installation required!** The project uses H2 in-memory database which works out of the box. H2 used as mentioned to use H2. Hence used H2 instead of MySQL.
 
 ## Quick Start (3 Steps)
 

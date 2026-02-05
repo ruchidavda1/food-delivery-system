@@ -236,44 +236,47 @@ Indexes: `customer_id`, `driver_id`, `order_time`
 
 ## Step-by-Step Example
 
-**Setup**: 6 customers, 2 drivers
+**Setup**: 6 customers, 2 drivers  
+**Initial heap**: [D1(0), D2(0)] - both free at time 0
 
 ### Customer 1: Order at 1, Travel 10
-- D1 available at 0 (Yes)
-- Assign D1
-- D1 now free at: 1 + 10 = 11
+- Peek heap: D1 at top (availableAt = 0)
+- 0 <= 1? Yes → Assign D1
+- Update D1: availableAt = 1 + 10 = 11
+- Re-insert into heap: [D2(0), D1(11)]
 - **Result: C1 - D1**
 
 ### Customer 2: Order at 4, Travel 20
-- D1 available at 11 (busy)
-- D2 available at 0 (Yes)
-- Assign D2
-- D2 now free at: 4 + 20 = 24
+- Peek heap: D2 at top (availableAt = 0)
+- 0 <= 4? Yes → Assign D2
+- Update D2: availableAt = 4 + 20 = 24
+- Re-insert into heap: [D1(11), D2(24)]
 - **Result: C2 - D2**
 
 ### Customer 3: Order at 15, Travel 5
-- D1 available at 11 (Yes)
-- Assign D1
-- D1 now free at: 15 + 5 = 20
+- Peek heap: D1 at top (availableAt = 11)
+- 11 <= 15? Yes → Assign D1
+- Update D1: availableAt = 15 + 5 = 20
+- Re-insert into heap: [D1(20), D2(24)]
 - **Result: C3 - D1**
 
 ### Customer 4: Order at 22, Travel 20
-- D1 available at 20 (Yes)
-- Assign D1
-- D1 now free at: 22 + 20 = 42
+- Peek heap: D1 at top (availableAt = 20)
+- 20 <= 22? Yes → Assign D1
+- Update D1: availableAt = 22 + 20 = 42
+- Re-insert into heap: [D2(24), D1(42)]
 - **Result: C4 - D1**
 
 ### Customer 5: Order at 24, Travel 10
-- D1 available at 42 (busy)
-- D2 available at 24 (Yes)
-- Assign D2
-- D2 now free at: 24 + 10 = 34
+- Peek heap: D2 at top (availableAt = 24)
+- 24 <= 24? Yes → Assign D2
+- Update D2: availableAt = 24 + 10 = 34
+- Re-insert into heap: [D2(34), D1(42)]
 - **Result: C5 - D2**
 
 ### Customer 6: Order at 25, Travel 10
-- D1 available at 42 (busy)
-- D2 available at 34 (busy)
-- No driver available
+- Peek heap: D2 at top (availableAt = 34)
+- 34 <= 25? No → No driver available
 - **Result: C6 - No Food :-(**
 
 ## Configuration

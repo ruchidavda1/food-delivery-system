@@ -2,6 +2,8 @@
 
 A cloud-based food delivery driver assignment system built for RoofTop Restaurant in New York. The system efficiently assigns delivery drivers to customer orders based on driver availability and order timing.
 
+📖 **[View Complete Documentation](DOCUMENTATION.md)** - Detailed technical documentation with architecture, API specs, and examples
+
 ## Problem Statement
 
 The system manages food delivery by assigning M drivers to N customer orders. Each customer order has:
@@ -54,9 +56,29 @@ food-delivery-system/
 ├── pom.xml
 ├── input.txt
 ├── schema-mysql.sql
+├── screenshots/
+│   └── (Application screenshots)
 ├── .gitignore
-└── README.md
+├── README.md
+└── DOCUMENTATION.md
 ```
+
+## Screenshots
+
+### Application Running
+![Application Started](screenshots/Screenshot%202026-02-05%20at%205.47.45%20PM.png)
+
+### API Testing
+![Health Check](screenshots/Screenshot%202026-02-05%20at%205.47.53%20PM.png)
+![Process Orders](screenshots/Screenshot%202026-02-05%20at%205.48.04%20PM.png)
+![Response](screenshots/Screenshot%202026-02-05%20at%205.48.13%20PM.png)
+
+### Database Views
+![Drivers](screenshots/Screenshot%202026-02-05%20at%205.48.21%20PM.png)
+![Customers](screenshots/Screenshot%202026-02-05%20at%205.48.29%20PM.png)
+![Assignments](screenshots/Screenshot%202026-02-05%20at%205.48.37%20PM.png)
+
+*For detailed explanations of each screenshot, see [DOCUMENTATION.md](DOCUMENTATION.md#screenshots)*
 
 ## Prerequisites
 
@@ -438,4 +460,29 @@ Given: 6 customers, 2 drivers
 - **REST API** - JSON web services
 - **Maven** - Build automation
 - **Java 17** - Modern LTS Java version
-# food-delivery-system
+
+---
+
+## 📚 Documentation
+
+For complete technical documentation including:
+- Detailed architecture diagrams
+- Algorithm flow charts
+- Complete API reference
+- Database schema details
+- Step-by-step example walkthroughs
+- Troubleshooting guide
+- Performance optimization tips
+
+**Please refer to [DOCUMENTATION.md](DOCUMENTATION.md)**
+
+---
+
+## 📸 Screenshots
+
+All application screenshots are available in the [screenshots](screenshots/) folder and documented in [DOCUMENTATION.md](DOCUMENTATION.md#screenshots).
+
+---
+
+**Developed for RoofTop Restaurant, New York**
+

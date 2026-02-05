@@ -66,17 +66,17 @@ food-delivery-system/
 ## Screenshots
 
 ### Application Running
-![Application Started](screenshots/Screenshot%202026-02-05%20at%205.47.45%20PM.png)
+<img src="screenshots/Screenshot 2026-02-05 at 5.47.45 PM.png" alt="Application Started" width="800"/>
 
 ### API Testing
-![Health Check](screenshots/Screenshot%202026-02-05%20at%205.47.53%20PM.png)
-![Process Orders](screenshots/Screenshot%202026-02-05%20at%205.48.04%20PM.png)
-![Response](screenshots/Screenshot%202026-02-05%20at%205.48.13%20PM.png)
+<img src="screenshots/Screenshot 2026-02-05 at 5.47.53 PM.png" alt="Health Check" width="800"/>
+<img src="screenshots/Screenshot 2026-02-05 at 5.48.04 PM.png" alt="Process Orders" width="800"/>
+<img src="screenshots/Screenshot 2026-02-05 at 5.48.13 PM.png" alt="Response" width="800"/>
 
 ### Database Views
-![Drivers](screenshots/Screenshot%202026-02-05%20at%205.48.21%20PM.png)
-![Customers](screenshots/Screenshot%202026-02-05%20at%205.48.29%20PM.png)
-![Assignments](screenshots/Screenshot%202026-02-05%20at%205.48.37%20PM.png)
+<img src="screenshots/Screenshot 2026-02-05 at 5.48.21 PM.png" alt="Drivers" width="800"/>
+<img src="screenshots/Screenshot 2026-02-05 at 5.48.29 PM.png" alt="Customers" width="800"/>
+<img src="screenshots/Screenshot 2026-02-05 at 5.48.37 PM.png" alt="Assignments" width="800"/>
 
 *For detailed explanations of each screenshot, see [DOCUMENTATION.md](DOCUMENTATION.md#screenshots)*
 

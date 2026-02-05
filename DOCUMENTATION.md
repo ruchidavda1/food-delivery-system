@@ -368,41 +368,48 @@ Check if the service is running.
 
 ### Application Running
 
-![Application Startup](screenshots/Screenshot%202026-02-05%20at%205.47.45%20PM.png)
+<img src="screenshots/Screenshot 2026-02-05 at 5.47.45 PM.png" alt="Application Startup" width="900"/>
+
 *Application successfully started on port 8080*
 
 ---
 
-![Health Check](screenshots/Screenshot%202026-02-05%20at%205.47.53%20PM.png)
+<img src="screenshots/Screenshot 2026-02-05 at 5.47.53 PM.png" alt="Health Check" width="900"/>
+
 *Health check endpoint responding*
 
 ---
 
 ### API Testing
 
-![Process Orders Request](screenshots/Screenshot%202026-02-05%20at%205.48.04%20PM.png)
+<img src="screenshots/Screenshot 2026-02-05 at 5.48.04 PM.png" alt="Process Orders Request" width="900"/>
+
 *Sending batch order request to process endpoint*
 
 ---
 
-![Process Orders Response](screenshots/Screenshot%202026-02-05%20at%205.48.13%20PM.png)
+<img src="screenshots/Screenshot 2026-02-05 at 5.48.13 PM.png" alt="Process Orders Response" width="900"/>
+
 *Successful driver assignments returned*
 
 ---
 
 ### Database Views
 
-![Drivers List](screenshots/Screenshot%202026-02-05%20at%205.48.21%20PM.png)
+<img src="screenshots/Screenshot 2026-02-05 at 5.48.21 PM.png" alt="Drivers List" width="900"/>
+
 *Current driver statuses and availability*
 
 ---
 
-![Customers List](screenshots/Screenshot%202026-02-05%20at%205.48.29%20PM.png)
+<img src="screenshots/Screenshot 2026-02-05 at 5.48.29 PM.png" alt="Customers List" width="900"/>
+
 *Customer orders with assignments*
 
 ---
 
-![Assignments Audit](screenshots/Screenshot%202026-02-05%20at%205.48.37%20PM.png)
+<img src="screenshots/Screenshot 2026-02-05 at 5.48.37 PM.png" alt="Assignments Audit" width="900"/>
+
 *Complete audit trail of all assignments*
 
 ---

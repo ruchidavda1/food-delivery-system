@@ -36,9 +36,11 @@ public class DeliveryAssignmentService {
         List<AssignmentResponse> responses = new ArrayList<>();
         List<Driver> drivers = driverRepository.findAllByOrderByDriverIdAsc();
         
+        // Use PriorityQueue for O(log M) driver lookup instead of O(M) iteration per order
+        // Heap maintains next available driver at top, sorted by availableAt then driverId
         PriorityQueue<Driver> driverQueue = new PriorityQueue<>(
             Comparator.comparingInt(Driver::getAvailableAt)
-                      .thenComparing(Driver::getDriverId)
+                      .thenComparing(Driver::getDriverId)  // Ensures D1 > D2 when both free at same time
         );
         driverQueue.addAll(drivers);
         
@@ -69,12 +71,13 @@ public class DeliveryAssignmentService {
             return "No Food :-(";
         }
         
+        // Remove from heap, update availability, then re-insert to maintain heap property
         driverQueue.poll();
         selectedDriver.setStatus("Busy");
         selectedDriver.setAvailableAt(orderTime + travelTime);
         driverRepository.save(selectedDriver);
         
-        driverQueue.offer(selectedDriver);
+        driverQueue.offer(selectedDriver);  // Re-heap with updated time
         
         return selectedDriver.getDriverId();
     }
@@ -95,6 +98,7 @@ public class DeliveryAssignmentService {
         assignment.setOrderTime(orderTime);
         assignment.setAssignmentResult(assignedDriver);
         
+        // Only set driver details if assignment was successful
         if (!assignedDriver.equals("No Food :-(")) {
             assignment.setDriverId(assignedDriver);
             assignment.setAssignmentTime(orderTime);

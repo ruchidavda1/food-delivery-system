@@ -23,24 +23,60 @@ Database (H2/MySQL)
 
 ## Algorithm
 
-The driver assignment logic in `DeliveryAssignmentService.java`:
+### Main Flow - processBatchOrders()
 
-```java
-private String assignDriver(List<Driver> drivers, int orderTime, int travelTime) {
-    for (Driver driver : drivers) {
-        if (driver.getAvailableAt() <= orderTime) {
-            driver.setStatus("Busy");
-            driver.setAvailableAt(orderTime + travelTime);
-            driverRepository.save(driver);
-            return driver.getDriverId();
-        }
-    }
-    return "No Food :-(";
-}
-```
+The main method orchestrates the entire process:
+
+1. **Initialize Drivers**: Calls `initializeDrivers()` to create M drivers (D1, D2, D3...) with status "Available" and availableAt set to 0
+2. **Fetch Drivers**: Retrieves all drivers ordered by driver_id ascending to ensure D1 is checked before D2
+3. **Process Each Order**: Loops through orders sequentially, generating customer IDs (C1, C2, C3...)
+4. **Assign Driver**: Calls `assignDriver()` to find an available driver
+5. **Save Customer**: Creates Customer entity with assigned driver and status (ASSIGNED or REJECTED)
+6. **Record Assignment**: Calls `saveAssignmentRecord()` to create audit trail
+7. **Build Response**: Returns list of AssignmentResponse objects
+
+### Driver Assignment Logic - assignDriver()
+
+This is the core algorithm that finds an available driver:
+
+1. **Loop Through Drivers**: Iterates through the driver list in order (D1, D2, D3...)
+2. **Check Availability**: For each driver, checks if `availableAt <= orderTime`
+3. **First Match Wins**: Breaks immediately when first available driver is found
+4. **No Driver Available**: Returns "No Food :-(" if all drivers are busy
+5. **Update Driver**: Sets status to "Busy" and updates `availableAt = orderTime + travelTime`
+6. **Persist Changes**: Saves driver to database
+7. **Return Driver ID**: Returns the assigned driver's ID (D1, D2, etc.)
+
+### Assignment Recording - saveAssignmentRecord()
+
+Creates an audit trail entry:
+
+1. **Create Assignment Entity**: New DeliveryAssignment object with customer ID, order time, and result
+2. **Add Driver Details**: If driver was assigned (not "No Food"), adds driver ID, assignment time, and completion time
+3. **Save to Database**: Persists assignment record for tracking
 
 **Time Complexity**: O(N × M) where N = orders, M = drivers  
 **Space Complexity**: O(N + M)
+
+### Data Transfer Objects (DTOs)
+
+**OrderRequest**: Contains orderTime and travelTime with validation annotations  
+**BatchOrderRequest**: Contains numberOfCustomers, numberOfDrivers, and list of OrderRequest objects  
+**AssignmentResponse**: Contains customerId, assignedDriver, and formatted message for output
+
+### Entity Models
+
+**Driver**: Stores driver_id, status (Available/Busy), availableAt time, and timestamps  
+**Customer**: Stores customer_id, order details, assigned_driver, status (ASSIGNED/REJECTED)  
+**DeliveryAssignment**: Audit record with customer_id, driver_id, times, and assignment result
+
+### Repositories
+
+Spring Data JPA interfaces that extend JpaRepository:
+
+**DriverRepository**: Has custom query `findAllByOrderByDriverIdAsc()` to maintain driver priority  
+**CustomerRepository**: Standard CRUD operations  
+**DeliveryAssignmentRepository**: Standard CRUD operations
 
 ## API Reference
 

@@ -335,19 +335,3 @@ Complete audit trail of all assignments with timestamps.
 
 Clears all data and resets the system.
 
-## Common Issues
-
-**Port 8080 already in use**
-```bash
-lsof -ti:8080 | xargs kill -9
-```
-
-**Maven build fails**
-```bash
-mvn clean install -U
-```
-
-**Wrong Java version**
-```bash
-java -version  # Should be Java 17
-```
